@@ -89,6 +89,11 @@ const clientInvoiceRoutes = require('./routes/clientInvoice.routes');
 const shiftRosterRoutes = require('./routes/shiftRoster.routes');
 const pyqRoutes = require('./routes/pyq.routes');
 
+// Training and certification expiry (#1076). The frontend's "Learning" nav
+// group held only exam-prep content; there was no employment training record
+// anywhere, and no way to answer "who holds a current POSH certification".
+const trainingRoutes = require('./routes/training.routes');
+
 // Business travel, per-diem and advance settlement (#1077). `expenseClaim` is
 // for money already spent; a trip is pre-approved, funded in advance, and its
 // per-diem has no receipt at all — so an unspent advance was a receivable
@@ -423,6 +428,10 @@ app.use('/api/clients', clientInvoiceRoutes);
 app.use('/api/shifts', shiftRosterRoutes);
 
 app.use('/api/pyqs', pyqRoutes);
+
+// Training and certification (#1076). The router owns `/courses`,
+// `/enrollments`, `/compliance` and `/my-training`.
+app.use('/api/training', trainingRoutes);
 
 // Business travel (#1077). The router owns `/policies`, `/requests`,
 // `/advances` and `/my-trips`.
