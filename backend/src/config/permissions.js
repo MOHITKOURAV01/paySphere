@@ -136,6 +136,35 @@ const PERMISSIONS = {
   // generation.
   MANAGE_PYQ: 'MANAGE_PYQ',
 
+  // --- Equity (#1073) ------------------------------------------------------
+  //
+  // Three names rather than the usual read/write pair, because the acts differ
+  // in kind and not just in direction.
+  READ_ESOP: 'READ_ESOP',
+  // Issuing a grant dilutes the cap table, and recording an exercise creates a
+  // perquisite filed under the employer's TAN. Neither is HR admin. This is
+  // MANAGE_CONTRACT's reasoning — an offer letter commits the company to a
+  // salary — one notch further along, so it stops at the owner.
+  MANAGE_ESOP: 'MANAGE_ESOP',
+  // Self-service. `getMyGrants` resolves the employee from `req.userId`, so
+  // holding this does not let one employee read a colleague's holding.
+  READ_OWN_ESOP: 'READ_OWN_ESOP',
+
+  // --- Recruitment (#1074) -------------------------------------------------
+  READ_REQUISITION: 'READ_REQUISITION',
+  // Opening a role commits headcount budget, and the approved CTC band is what
+  // every offer is checked against — so being able to widen a band is being
+  // able to approve any offer. Owner only, for the same reason MANAGE_CONTRACT
+  // is.
+  MANAGE_REQUISITION: 'MANAGE_REQUISITION',
+  // Running the pipeline: adding applicants and moving them between stages.
+  // HR's day job, and deliberately not the same authority as setting the band
+  // those candidates are offered against.
+  MANAGE_CANDIDATE: 'MANAGE_CANDIDATE',
+  // Interviewers are not recruiters. This is held by whoever sits on a panel,
+  // which is a different and much larger population than HR.
+  SUBMIT_INTERVIEW_FEEDBACK: 'SUBMIT_INTERVIEW_FEEDBACK',
+
   // --- Salary disbursement (#1075) -----------------------------------------
   READ_DISBURSEMENT: 'READ_DISBURSEMENT',
   // Building a batch, validating it and downloading the bank file. The download
@@ -313,6 +342,44 @@ const PERMISSION_DEFINITIONS = [
       'Add and bulk-upload previous-year questions, and generate trend forecasts',
   },
 
+  // #1073.
+  {
+    name: PERMISSIONS.READ_ESOP,
+    description:
+      'View stock option schemes, every employee grant and its vesting position',
+  },
+  {
+    name: PERMISSIONS.MANAGE_ESOP,
+    description:
+      'Open option schemes, issue grants against the authorised pool, and record exercises and forfeitures',
+  },
+  {
+    name: PERMISSIONS.READ_OWN_ESOP,
+    description: 'View your own option grants, vesting schedule and exercises',
+  },
+
+  // #1074.
+  {
+    name: PERMISSIONS.READ_REQUISITION,
+    description:
+      'View job requisitions, candidates, interview scorecards and hiring funnel analytics',
+  },
+  {
+    name: PERMISSIONS.MANAGE_REQUISITION,
+    description:
+      'Open, hold and close job requisitions, and set the approved CTC band every offer is checked against',
+  },
+  {
+    name: PERMISSIONS.MANAGE_CANDIDATE,
+    description:
+      'Add candidates and move them through the hiring pipeline, including making offers and recording hires',
+  },
+  {
+    name: PERMISSIONS.SUBMIT_INTERVIEW_FEEDBACK,
+    description:
+      'Submit an interview scorecard for a candidate you interviewed',
+  },
+
   // #1075.
   {
     name: PERMISSIONS.READ_DISBURSEMENT,
@@ -396,6 +463,18 @@ const ROLE_DEFINITIONS = [
       PERMISSIONS.READ_PYQ,
       PERMISSIONS.MANAGE_PYQ,
 
+      // #1073. MANAGE_ESOP stops here — it is the only permission in the
+      // product that changes who owns the company.
+      PERMISSIONS.READ_ESOP,
+      PERMISSIONS.MANAGE_ESOP,
+      PERMISSIONS.READ_OWN_ESOP,
+
+      // #1074.
+      PERMISSIONS.READ_REQUISITION,
+      PERMISSIONS.MANAGE_REQUISITION,
+      PERMISSIONS.MANAGE_CANDIDATE,
+      PERMISSIONS.SUBMIT_INTERVIEW_FEEDBACK,
+
       // #1075.
       PERMISSIONS.READ_DISBURSEMENT,
       PERMISSIONS.MANAGE_DISBURSEMENT,
@@ -448,6 +527,19 @@ const ROLE_DEFINITIONS = [
       PERMISSIONS.VERIFY_TAX_PROOF,
       PERMISSIONS.READ_PYQ,
 
+      // #1073. HR can see the cap table — it answers "what is this person's
+      // total compensation", which is HR's question — and cannot issue against
+      // it.
+      PERMISSIONS.READ_ESOP,
+      PERMISSIONS.READ_OWN_ESOP,
+
+      // #1074. HR runs the pipeline and sits on panels. It does not open
+      // requisitions or move the CTC band — that is headcount budget, and
+      // widening a band is equivalent to approving any offer against it.
+      PERMISSIONS.READ_REQUISITION,
+      PERMISSIONS.MANAGE_CANDIDATE,
+      PERMISSIONS.SUBMIT_INTERVIEW_FEEDBACK,
+
       // #1075. HR assembles the payment file; it does not release it. Same
       // maker-checker split as APPROVE_PAYROLL, which HR also does not hold.
       PERMISSIONS.READ_DISBURSEMENT,
@@ -485,6 +577,16 @@ const ROLE_DEFINITIONS = [
       // Employees see the roster they are on.
       PERMISSIONS.READ_ROSTER,
       PERMISSIONS.READ_PYQ,
+
+      // #1073. Their own grants only. Deliberately not READ_ESOP, which is the
+      // whole company's cap table.
+      PERMISSIONS.READ_OWN_ESOP,
+
+      // #1074. An employee who interviews files a scorecard; the interviewer is
+      // taken from `req.userId`, so this does not let one person file feedback
+      // under another's name. Deliberately not READ_REQUISITION, which exposes
+      // every candidate's expected and offered CTC.
+      PERMISSIONS.SUBMIT_INTERVIEW_FEEDBACK,
     ],
   },
 ];

@@ -116,6 +116,17 @@ const MOUNTED_ROUTES = [
   ['/api/shifts', 'get', '/api/shifts/roster'],
   ['/api/pyqs', 'get', '/api/pyqs'],
 
+  // Mounted in #1073. Restored here along with the permissions and the mount in
+  // app.js: #1083's merge kept only its own side of the conflicts in
+  // `config/permissions.js` and `app.js`, so the ESOP feature's files landed on
+  // main and its wiring did not. This row was the one piece of it that survived
+  // in `ROUTER_MOUNTS` below, which is what turned the loss into a failing test
+  // rather than another silent 404.
+  ['/api/esop', 'get', '/api/esop/schemes'],
+
+  // Mounted in #1074.
+  ['/api/recruitment', 'get', '/api/recruitment/requisitions'],
+
   // Mounted in #1075.
   ['/api/disbursements', 'get', '/api/disbursements/batches'],
 ];
@@ -171,6 +182,7 @@ const ROUTER_MOUNTS = {
   email: '/api/email',
   employee: '/api/employees',
   employeePortal: '/api/employee-portal',
+  esop: '/api/esop',
   expense: '/api/expenses',
   flashcard: '/api/flashcards',
   forecast: '/api/forecasts',
@@ -189,6 +201,7 @@ const ROUTER_MOUNTS = {
   notification: '/api/notifications',
   payroll: '/api/payroll',
   pyq: '/api/pyqs',
+  recruitment: '/api/recruitment',
   reports: '/api/reports',
   role: '/api/roles',
   salaryHistory: '/api',
