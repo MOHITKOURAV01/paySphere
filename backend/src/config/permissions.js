@@ -136,6 +136,17 @@ const PERMISSIONS = {
   // generation.
   MANAGE_PYQ: 'MANAGE_PYQ',
 
+  // --- Training and certification (#1076) ----------------------------------
+  READ_TRAINING: 'READ_TRAINING',
+  // Creating courses, assigning them, recording completions and waiving
+  // obligations. Stays with HR rather than moving to the owner: assigning
+  // fire-safety training commits no budget and moves no money. The one action
+  // with real weight is the waiver, and that is bounded by the endpoint
+  // requiring a written reason.
+  MANAGE_TRAINING: 'MANAGE_TRAINING',
+  // Self-service. `getMyTraining` resolves the employee from `req.userId`.
+  COMPLETE_OWN_TRAINING: 'COMPLETE_OWN_TRAINING',
+
   // --- Business travel (#1077) ---------------------------------------------
   READ_TRAVEL: 'READ_TRAVEL',
   // Filing a trip you are about to take. Held by employees — that is the point
@@ -357,6 +368,23 @@ const PERMISSION_DEFINITIONS = [
       'Add and bulk-upload previous-year questions, and generate trend forecasts',
   },
 
+  // #1076.
+  {
+    name: PERMISSIONS.READ_TRAINING,
+    description:
+      'View the training catalogue and the certification compliance and expiry reports',
+  },
+  {
+    name: PERMISSIONS.MANAGE_TRAINING,
+    description:
+      'Create training courses, assign them, record completions, and waive a mandatory training obligation',
+  },
+  {
+    name: PERMISSIONS.COMPLETE_OWN_TRAINING,
+    description:
+      'View your own assigned training, certifications and renewal dates',
+  },
+
   // #1077.
   {
     name: PERMISSIONS.READ_TRAVEL,
@@ -499,6 +527,11 @@ const ROLE_DEFINITIONS = [
       PERMISSIONS.READ_PYQ,
       PERMISSIONS.MANAGE_PYQ,
 
+      // #1076.
+      PERMISSIONS.READ_TRAINING,
+      PERMISSIONS.MANAGE_TRAINING,
+      PERMISSIONS.COMPLETE_OWN_TRAINING,
+
       // #1077.
       PERMISSIONS.READ_TRAVEL,
       PERMISSIONS.SUBMIT_TRAVEL_REQUEST,
@@ -584,6 +617,12 @@ const ROLE_DEFINITIONS = [
       PERMISSIONS.SUBMIT_TRAVEL_REQUEST,
       PERMISSIONS.APPROVE_TRAVEL,
 
+      // #1076. Squarely HR: it is HR that has to produce "who was trained,
+      // when, and is it still current" during an audit.
+      PERMISSIONS.READ_TRAINING,
+      PERMISSIONS.MANAGE_TRAINING,
+      PERMISSIONS.COMPLETE_OWN_TRAINING,
+
       // #1074. HR runs the pipeline and sits on panels. It does not open
       // requisitions or move the CTC band — that is headcount budget, and
       // widening a band is equivalent to approving any offer against it.
@@ -628,6 +667,11 @@ const ROLE_DEFINITIONS = [
       // Employees see the roster they are on.
       PERMISSIONS.READ_ROSTER,
       PERMISSIONS.READ_PYQ,
+
+      // #1076. Their own training record and renewal dates. Deliberately not
+      // READ_TRAINING, which carries the company-wide compliance reports and
+      // names every colleague who is missing a mandatory certification.
+      PERMISSIONS.COMPLETE_OWN_TRAINING,
 
       // #1077. Filing a trip and seeing your own. `createRequest` falls back to
       // the caller's own employee record when no id is sent, and `getMyTrips`
